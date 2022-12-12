@@ -2007,18 +2007,21 @@ h_positions, t_positions = [],[]
 Diag_Dict = {(2,1):(1,1), (2,-1):(1,-1),
           (-2,1):(-1,1), (-2,-1):(-1,-1),
           (1,2):(1,1), (-1,2):(-1,1),
-          (1,-2):(1,-1), (-1,-2):(-1,-1)}
+          (1,-2):(1,-1), (-1,-2):(-1,-1),
+          (2,2):(1,1), (2,-2):(1,-1),
+          (-2,2):(-1,1), (-2,-2):(-1,-1)
+}
 
 def moveTail(h_x, h_y, t_x, t_y, vec):
     if abs(h_x - t_x) <=1 and abs(h_y - t_y) <=1: #within 1, don't move
         return (0,0)
     elif h_x == t_x: #x are the same, move y
-        if vec == "U":
+        if h_y - t_y > 0:
             return(0, h_y-t_y-1)
         else:
             return(0, h_y-t_y+1)
     elif h_y == t_y: #y are the same, move x
-        if vec == "R":
+        if h_x - t_x > 0:
             return(h_x-t_x-1,0)
         else:
             return(h_x-t_x+1,0)
@@ -2037,5 +2040,23 @@ for r in raw:
         t_x+=t_vec[0]
         t_y+=t_vec[1]
         t_positions.append((t_x,t_y))
-
 print(len(set(t_positions)))
+
+positions = [[(0,0)] for i in range(10)]
+for r in raw:
+    vec, dist = r.split()
+    for i in range(int(dist)):
+        x, y = positions[0][-1][0], positions[0][-1][1]
+        if vec == "U": x+=1
+        elif vec == "D": x-=1
+        elif vec == "L": y-=1
+        else: y+=1
+        positions[0].append((x,y))
+        for j in range(1,10):
+            t_x, t_y = positions[j][-1][0], positions[j][-1][1]
+            t_vec = moveTail(x, y, t_x, t_y, vec)
+            t_x+=t_vec[0]
+            t_y+=t_vec[1]
+            positions[j].append((t_x, t_y))
+            x, y = t_x, t_y
+print(len(set(positions[9])))
