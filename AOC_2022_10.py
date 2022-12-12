@@ -148,29 +148,40 @@ cycle = 0
 X = 1
 total = 0
 i = 0
+sprite = [0,1,2]
+screen = []
 for r in raw:
     inst = r.split()[0]
     if inst == "addx": 
         V = int(r.split()[1])
+        if cycle%40 in sprite: screen.append('X')
+        else: screen.append('.')
+        cycle+=1
+        
+        if cycle%(20+40*i) == 0:
+            total+=cycle*X
+            i+=1
+        if cycle%40 in sprite: screen.append('X')
+        else: screen.append('.')
         cycle+=1
         if cycle%(20+40*i) == 0:
             total+=cycle*X
             i+=1
-            print(cycle, X, total)
-        cycle+=1
-        if cycle%(20+40*i) == 0:
-            total+=cycle*X
-            i+=1
-            print(cycle, X, total)
         X+=V
+        sprite = [x+V for x in sprite]
     else:
+        if cycle%40 in sprite: screen.append('X')
+        else: screen.append('.')
         cycle+=1
+        
+        
     if cycle%(20+40*i) == 0:
             total+=cycle*X
             i+=1
-            print(cycle, X, total)
     
 print(total)
+for i in range(6):
+    print("".join(screen[i*40:i*40+40]))
         
     
     
