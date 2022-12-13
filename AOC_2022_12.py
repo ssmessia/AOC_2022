@@ -40,18 +40,8 @@ abccccccccaaaaacccccccccccccccccccccacaaaaaaccccccccccccccaaacccccccccccccccaccc
 abcccccccccaaaaaaccccccccccccccccaaaaaaaaaaacccccccccccccccccccccccccccccccccccccccacccccccccccaaaaaa
 abcccccccaaaaaaaaccccccccccccccccaaaaaaaaaaaaacccccccccccccccccccccccccccccccccccccccccccccccccaaaaaa
 '''
-
+import copy
 #S = -13, E = -27
-class Node():
-    def __init__(self, height, up, down, left, right):
-        self.height = height
-        self.up = up
-        self.down = down
-        self.right = left
-        self.left = right
-        self.visited = False
-        
-
 raw = [[ord(x)-96 for x in r] for r in raw.splitlines()]
 for r in raw:
     r.insert(0,100)
@@ -59,36 +49,48 @@ for r in raw:
 fill = [100 for i in range(len(raw[0]))]
 raw.insert(0,fill)
 raw.append(fill)
-raw[21][1], raw[21][78] = 0,27 #Start/End unique values
-print(raw[1])
+raw[21][1], raw[21][78] = 1, 26 #Start/End unique values
 
-Nodes = []
+Graph = {}
+A = []
 for i in range(1,len(raw)-1):
-    temp = []
     for j in range(1, len(raw[0])-1):
-        up, down, left, right = 0,0,0,0
-        height = raw[i][j]
-        if raw[i-1][j] <= raw[i][j] <= raw[i-1][j] + 1:
-            up = 1
-        if raw[i+1][j] <= raw[i][j] <= raw[i+1][j] + 1:
-            down = 1
-        if raw[i][j+1] <= raw[i][j] <= raw[i][j+1] + 1:
-            right = 1
-        if raw[i][j-1] <= raw[i][j] <= raw[i][j-1] + 1:
-            left = 1
-        temp.append(Node(height, up, down, left, right))
-    Nodes.append(temp)
+        name = (i,j)
+        if raw[i][j] == 1:
+            A.append(name)
+        Graph[name] = {"dist":1, "neighbors":[]}
+        if raw[i-1][j] <= raw[i][j] + 1:
+            Graph[name]['neighbors'].append((i-1,j))
+        if raw[i+1][j] <= raw[i][j] + 1:
+            Graph[name]['neighbors'].append((i+1,j))
+        if raw[i][j+1] <= raw[i][j] + 1:
+            Graph[name]['neighbors'].append((i,j+1))
+        if raw[i][j-1] <= raw[i][j] + 1:
+            Graph[name]['neighbors'].append((i,j-1))
 
-for i in range(len(Nodes[0])):
-    print(i, Nodes[0][i].height, Nodes[0][i].up, Nodes[0][i].down, Nodes[0][i].left, Nodes[0][i].right)
+#https://stackoverflow.com/questions/23477921/bfs-algorithm-in-python
+visited = [] #Store visted nodes
+queue = [] #BFS uses queue structure so this varible will work like QUEUE ( LIFO)
+
+def bfs(visited,graph,node):
+    visited.append(node)
+    queue.append(node)
+    while queue:
+        s = queue.pop(0)
+        for neighbor in graph[s]['neighbors']:
+            if neighbor not in visited:
+                visited.append(neighbor)
+                graph[neighbor]["dist"] = graph[s]["dist"]+1
+                queue.append(neighbor)
+G = copy.deepcopy(Graph)
+bfs(visited,G,(21,1))
+print("Part 1: " + str(G[(21,79)]["dist"]))
+
+shortest = 10000
+for a in A:
+    visited, queue = [],[]
+    G = copy.deepcopy(Graph)
+    bfs(visited,G,a)
+    if 1 < G[(21,79)]["dist"] < shortest: shortest = G[(21,79)]["dist"]
     
-
-        
-        
-
-
-
-
-            
-
-
+print("Part 2: "+str(shortest))
