@@ -192,7 +192,9 @@ for r in lines:
                 y1,y2 = y2, y1
             for j in range(y1, y2+1):
                 cave[j][x1] = '#'
+
 part2_cave = copy.deepcopy(cave)
+
 count = 0
 abyss = False
 while not abyss:
@@ -214,7 +216,7 @@ while not abyss:
             cave[i][j] = 'o'
     if i >= max_y: abyss = True
 
-for i,c in enumerate(cave):
+for c in cave:
     print(''.join(c[min_x-1:max_x+2]))
 print("Part 1: "+str(count-1))
 
@@ -239,8 +241,10 @@ while part2_cave[0][500] == '.':
             stopped = True
             part2_cave[i][j] = 'o'
 
-for i,c in enumerate(part2_cave):
+for c in part2_cave:
     print(''.join(c[min_x-75:max_x+75]))
-print(count)
+print("Part 2: "+str(count))
+
+
 
 
