@@ -176,9 +176,8 @@ for r in raw:
 min_x = min([item[0] for sublist in lines for item in sublist])
 max_x = max([item[0] for sublist in lines for item in sublist])
 max_y = max([item[1] for sublist in lines for item in sublist])
-line = ['.' for i in range(max_x+2)]
+line = ['.' for i in range(1001)]
 cave = [copy.deepcopy(line) for i in range(max_y+3)]
-print(len(cave), len(cave[0]))
 
 for r in lines:
     for i in range(len(r)-1):
@@ -193,9 +192,7 @@ for r in lines:
                 y1,y2 = y2, y1
             for j in range(y1, y2+1):
                 cave[j][x1] = '#'
-
-print(max_y)
-level_reached = 0
+part2_cave = copy.deepcopy(cave)
 count = 0
 abyss = False
 while not abyss:
@@ -215,9 +212,35 @@ while not abyss:
         else: #stop
             stopped = True
             cave[i][j] = 'o'
-            if i > level_reached: level_reached = i
     if i >= max_y: abyss = True
 
 for i,c in enumerate(cave):
-    print(str(i)+''.join(c[min_x-1:]))
+    print(''.join(c[min_x-1:max_x+2]))
 print("Part 1: "+str(count-1))
+
+part2_cave.pop()
+part2_cave.append(["#" for i in range(1001)]) #put in the floor
+
+count = 0
+while part2_cave[0][500] == '.':
+    count+=1
+    stopped = False
+    i, j = 0,500
+    while not stopped:
+        if part2_cave[i+1][j] == '.': #move down
+            i+=1
+        elif part2_cave[i+1][j-1] == '.': #move left
+            i+=1
+            j-=1
+        elif part2_cave[i+1][j+1] == '.': #move right
+            i+=1
+            j+=1
+        else: #stop
+            stopped = True
+            part2_cave[i][j] = 'o'
+
+for i,c in enumerate(part2_cave):
+    print(''.join(c[min_x-75:max_x+75]))
+print(count)
+
+
