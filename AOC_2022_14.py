@@ -164,22 +164,18 @@ raw ='''471,144 -> 471,134 -> 471,144 -> 473,144 -> 473,140 -> 473,144 -> 475,14
 520,56 -> 520,60 -> 517,60 -> 517,66 -> 528,66 -> 528,60 -> 523,60 -> 523,56'''
 import copy
 
-lines = []
 raw = raw.splitlines()
-for r in raw:
-    temp = []
-    tups = r.split(' -> ')
-    for t in tups:
-        temp.append(eval(t))
-    lines.append(temp)
+raw = [r.split(' -> ') for r in raw]
+raw = [[eval(t) for t in r] for r in raw]
 
-min_x = min([item[0] for sublist in lines for item in sublist])
-max_x = max([item[0] for sublist in lines for item in sublist])
-max_y = max([item[1] for sublist in lines for item in sublist])
-line = ['.' for i in range(1001)]
+min_x = min([item[0] for sublist in raw for item in sublist])
+max_x = max([item[0] for sublist in raw for item in sublist])
+max_y = max([item[1] for sublist in raw for item in sublist])
+
+line = ['.' for i in range(1001)] #2x height of cave
 cave = [copy.deepcopy(line) for i in range(max_y+3)]
 
-for r in lines:
+for r in raw: #draw the rocks
     for i in range(len(r)-1):
         x1,x2,y1,y2 = r[i][0], r[i+1][0], r[i][1], r[i+1][1]
         if y1 == y2: #horizontal line
@@ -193,7 +189,7 @@ for r in lines:
             for j in range(y1, y2+1):
                 cave[j][x1] = '#'
 
-part2_cave = copy.deepcopy(cave)
+cave2 = copy.deepcopy(cave) #copy the cave for part2
 
 count = 0
 abyss = False
@@ -220,28 +216,28 @@ for c in cave:
     print(''.join(c[min_x-1:max_x+2]))
 print("Part 1: "+str(count-1))
 
-part2_cave.pop()
-part2_cave.append(["#" for i in range(1001)]) #put in the floor
+cave2.pop()
+cave2.append(["#" for i in range(1001)]) #put in the floor
 
 count = 0
-while part2_cave[0][500] == '.':
+while cave2[0][500] == '.':
     count+=1
     stopped = False
     i, j = 0,500
     while not stopped:
-        if part2_cave[i+1][j] == '.': #move down
+        if cave2[i+1][j] == '.': #move down
             i+=1
-        elif part2_cave[i+1][j-1] == '.': #move left
+        elif cave2[i+1][j-1] == '.': #move left
             i+=1
             j-=1
-        elif part2_cave[i+1][j+1] == '.': #move right
+        elif cave2[i+1][j+1] == '.': #move right
             i+=1
             j+=1
         else: #stop
             stopped = True
-            part2_cave[i][j] = 'o'
+            cave2[i][j] = 'o'
 
-for c in part2_cave:
+for c in cave2:
     print(''.join(c[min_x-75:max_x+75]))
 print("Part 2: "+str(count))
 
