@@ -69,8 +69,6 @@ for p in positions:
     for i in range(manhattan+1):
         P[y1+i].append((x1-manhattan-i, x1+manhattan-i))
         P[y1-i].append((x1-manhattan-i, x1+manhattan-i))
-for i in range(0,4000000,100000):
-    print(P[i])
 
 #start with a tuple (0,4000000), then remove from it and see what's left
 for i in range(4000001):
@@ -78,7 +76,7 @@ for i in range(4000001):
     for p in P[i]:
         low, high = p
         for t in T:
-            if low<t[0] and high>t[1]: #tuple is covered, remove
+            if low<t[0] and t[1]<high: #tuple is covered, remove
                 T.remove(t)
             elif t[0] < low < high < t[1]: #separate into two tuples:
                 lower, upper = (t[0],low), (high,t[1])
