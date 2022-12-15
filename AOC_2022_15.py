@@ -64,13 +64,20 @@ for p in positions:
     print(p)
     x1, y1, x2, y2 = p
     manhattan = abs(x1-x2) + abs(y1-y2)
-    dist_away = abs(y1-2000000)
     for i in range(manhattan+1):
-        P[y1+i].append((x1-manhattan-1-i, x1+manhattan+1-i))
-        P[y1-i].append((x1-manhattan-1-i, x1+manhattan+1-i))
-for i in range(10):
-    print(P[i])
+        P[y1+i].append((x1-manhattan-i, x1+manhattan-i))
+        P[y1-i].append((x1-manhattan-i, x1+manhattan-i))
 
+for i in range(0,4000001):
+    lowest_pos, highest_pos = 4000000,0
+    for p in P[i]:
+        low, high = p
+        if high > 4000000 and low < lowest_pos:
+            lowest_pos = high
+        if low < 0 and low > highest_pos:
+            highest_pos = low
+    if highest_pos >= lowest_pos:
+        print(i, lowest_pos, highest_pos)
 
 
 
