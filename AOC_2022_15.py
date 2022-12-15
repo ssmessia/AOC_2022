@@ -68,14 +68,16 @@ for p in positions:
         P[y1+i].append((x1-manhattan-i, x1+manhattan-i))
         P[y1-i].append((x1-manhattan-i, x1+manhattan-i))
 
+print(P[0])
+
 for i in range(0,4000001):
     lowest_pos, highest_pos = 4000000,0
     for p in P[i]:
         low, high = p
-        if high > 4000000 and low < lowest_pos:
-            lowest_pos = high
-        if low < 0 and low > highest_pos:
+        if high >= 4000000 and low < highest_pos:
             highest_pos = low
+        if low <= 0 and low > lowest_pos:
+            lowest_pos = high
     if highest_pos >= lowest_pos:
         print(i, lowest_pos, highest_pos)
 
