@@ -67,30 +67,34 @@ for p in positions:
     x1, y1, x2, y2 = p
     manhattan = abs(x1-x2) + abs(y1-y2)
     for i in range(manhattan+1):
-        P[y1+i].append((x1-manhattan-i, x1+manhattan-i))
-        P[y1-i].append((x1-manhattan-i, x1+manhattan-i))
-
+        if 0 <= y1+i <= 4000000:
+          P[y1+i].append((x1-manhattan-i, x1+manhattan-i))
+        if 0 <= y1-i <= 4000000:
+          P[y1-i].append((x1-manhattan-i, x1+manhattan-i))
+print(len(P))
 #start with a tuple (0,4000000), then remove from it and see what's left
 for i in range(4000001):
     T = [(0, 4000000)] #range of possible locations
     for p in P[i]:
         low, high = p
-        for t in T:
-            if low<t[0] and t[1]<high: #tuple is covered, remove
+        for t in T:          
+            if low<=t[0] and t[1]<=high: #tuple is covered, remove
                 T.remove(t)
-            elif t[0] < low < high < t[1]: #separate into two tuples:
-                lower, upper = (t[0],low), (high,t[1])
-                T.remove(t)
+            elif t[0] <= low and high <= t[1]: #separate into two tuples:
+                lower, upper = (t[0],low-1), (high+1,t[1])
                 T.append(lower)
                 T.append(upper)
-            elif low <= t[0] <= high: #raise lower end
-                new = (high, t[1])
                 T.remove(t)
+            elif t[0] <= high <=t[1]: #raise lower end
+                new = (high+1, t[1])
                 T.append(new)
+                T.remove(t)
             elif low <= t[1] <= high: #lower higher end
-                new = (t[0], low)
-                T.remove(t)
+                new = (t[0], low-1)
                 T.append(new)
+                T.remove(t)
     if T: print(i,T)
+
+
         
        
