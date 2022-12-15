@@ -23,6 +23,7 @@ Sensor at x=123637, y=2726215: closest beacon is at x=-886690, y=3416197
 Sensor at x=4000000, y=3544014: closest beacon is at x=3980421, y=3524442
 Sensor at x=2524955, y=3861248: closest beacon is at x=2729330, y=3697325
 Sensor at x=2605475, y=3152151: closest beacon is at x=2727127, y=2959718'''
+
 from collections import defaultdict
 raw = raw.splitlines()
 positions = []
@@ -30,6 +31,7 @@ for r in raw:
     t1 = (int(r[r.find('x=')+2:r.find(',')]), int(r[r.find('y=')+2:r.find(':')]))
     t2 = (int(r[r.rfind('x=')+2:r.rfind(',')]), int(r[r.rfind('y=')+2:]))
     positions.append(t1+t2)
+    
 '''
 huge search space (in the trillions of positions), can't simulate entire space
 for each position, get Manhattan distance, calculate list of positions it can't be append to dict[y] = [x,]
@@ -57,7 +59,7 @@ print(len(list(set(P[2000000])))-1) #there is a beacon at y=2000000
 #need something non-quadratic
 #remove ranges where it can't be from 0-4000000 (this would still take too long)
 #lowest/highest it can't be for each row
-#for each sensor, for each manhattan dist, if 
+#for each sensor, for each manhattan dist
 
 P = defaultdict(list)
 for p in positions:
@@ -67,21 +69,30 @@ for p in positions:
     for i in range(manhattan+1):
         P[y1+i].append((x1-manhattan-i, x1+manhattan-i))
         P[y1-i].append((x1-manhattan-i, x1+manhattan-i))
+for i in range(0,4000000,100000):
+    print(P[i])
 
-print(P[0])
-
-for i in range(0,4000001):
-    lowest_pos, highest_pos = 4000000,0
+#start with a tuple (0,4000000), then remove from it and see what's left
+for i in range(4000001):
+    T = [(0, 4000000)] #range of possible locations
     for p in P[i]:
         low, high = p
-        if high >= 4000000 and low < highest_pos:
-            highest_pos = low
-        if low <= 0 and low > lowest_pos:
-            lowest_pos = high
-    if highest_pos >= lowest_pos:
-        print(i, lowest_pos, highest_pos)
-
-
-
-
-
+        for t in T:
+            if low<t[0] and high>t[1]: #tuple is covered, remove
+                T.remove(t)
+            elif t[0] < low < high < t[1]: #separate into two tuples:
+                lower, upper = (t[0],low), (high,t[1])
+                T.remove(t)
+                T.append(lower)
+                T.append(upper)
+            elif low <= t[0] <= high: #raise lower end
+                new = (high, t[1])
+                T.remove(t)
+                T.append(new)
+            elif low <= t[1] <= high: #lower higher end
+                new = (t[0], low)
+                T.remove(t)
+                T.append(new)
+    if T: print(i,T)
+        
+       
