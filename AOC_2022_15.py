@@ -57,30 +57,56 @@ for p in positions:
 print(len(list(set(P[2000000])))-1) #there is a beacon at y=2000000
 
 #need something non-quadratic
-#remove ranges where it can't be from 0-4000000 (this would still take too long)
-#lowest/highest it can't be for each row
-#for each sensor, for each manhattan dist
 
+#generate all points that are just outside the Manhattan distance
+#iterate through those to see if they are within a sensors Manhattan distance
 P = defaultdict(list)
+possibles = []
 for p in positions:
     print(p)
     x1, y1, x2, y2 = p
     manhattan = abs(x1-x2) + abs(y1-y2)
     for i in range(manhattan+1):
+        left, right = x1-manhattan+1-i, x1+manhattan+1-i
+        if left < 0: left = 0
+        if right > 4000000: right = 4000000
         if 0 <= y1+i <= 4000000:
-          P[y1+i].append((x1-manhattan-i, x1+manhattan-i))
+          possibles.append((left, y1+i))
+          possibles.append((right, y1+i))
         if 0 <= y1-i <= 4000000:
-          P[y1-i].append((x1-manhattan-i, x1+manhattan-i))
-print(len(P))
+          possibles.append((left, y1+i))
+          possibles.append((right, y1+i))
+
+goal = len(positions)
+for pos in possibles:
+    total = 0
+    for p in positions:
+        x1, y1, x2, y2 = p
+        dist = abs(x1-pos[0]) + abs(y1-pos[1])
+        manhattan = abs(x1-x2) + abs(y1-y2)
+        if dist > manhattan:
+            total+=1
+    if total == goal:
+        print(pos, pos[0]*4000000+pos[1]) 
+
+#could never get this to work
+
+#remove ranges where it can't be from 0-4000000 (this would still take too long)
+#lowest/highest it can't be for each row
+#for each sensor, for each manhattan dist
+'''
 #start with a tuple (0,4000000), then remove from it and see what's left
 for i in range(4000001):
     T = [(0, 4000000)] #range of possible locations
     for p in P[i]:
+        #print(T,p)
         low, high = p
-        for t in T:          
-            if low<=t[0] and t[1]<=high: #tuple is covered, remove
+        for t in T: 
+            if t[0] ==  4000000 or t[1] == 0:
+                T.remove(t)        
+            elif low<=t[0] and t[1]<=high and (t[0] != t[1]): #tuple is covered, remove
                 T.remove(t)
-            elif t[0] <= low and high <= t[1]: #separate into two tuples:
+            elif t[0] <= low <= high <= t[1]: #separate into two tuples:
                 lower, upper = (t[0],low-1), (high+1,t[1])
                 T.append(lower)
                 T.append(upper)
@@ -94,7 +120,7 @@ for i in range(4000001):
                 T.append(new)
                 T.remove(t)
     if T: print(i,T)
-
+'''
 
         
        
